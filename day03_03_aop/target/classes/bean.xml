@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--配置service-->
+    <bean id="accountService" class="com.lxgzhw.dao.impl.AccountServiceImpl"></bean>
+    <!--配置Logger-->
+    <bean id="logger" class="com.lxgzhw.util.Logger"></bean>
+    <!--配置aop-->
+    <aop:config>
+        <!--配置切面-->
+        <aop:aspect id="logAdvice" ref="logger">
+            <!--配置通知的类型,并建立通知方法和切入点的关联
+            pointcut:表示切入点
+                execution(填关联的方法)
+                格式是:返回值类型 报名.类名.方法名(参数列表)
+                通配符:* 表示任意返回值,任意类名,任意方法名  (..)表示任意参数
+                全通配符写法: * *..*.*(..)
+            -->
+            <aop:before method="printLog" pointcut="execution(* com.lxgzhw.dao.impl.*.*(..))"></aop:before>
+        </aop:aspect>
+    </aop:config>
+</beans>

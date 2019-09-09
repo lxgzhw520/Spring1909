@@ -1,0 +1,16 @@
+CREATE DATABASE day039 CHARSET=utf8;
+USE day039;
+
+CREATE TABLE province(
+id INT PRIMARY KEY AUTO_INCREMENT,
+NAME VARCHAR(32)
+)CHARSET=utf8;
+
+SHOW TABLES;
+
+INSERT INTO province VALUES
+(NULL,"贵州"),
+(NULL,"重庆"),
+(NULL,"四川"),
+(NULL,"云南"),
+(NULL,"广西");

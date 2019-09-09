@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--配置代理的service-->
+    <bean id="proxyAccountService" factory-bean="beanFactory" factory-method="getAccountService"></bean>
+    <!--配置beanFactory-->
+    <bean id="beanFactory" class="com.lxgzhw.factory.BeanFactory">
+        <!--注入service-->
+        <property name="accountService" ref="accountService"></property>
+        <!--注入事务管理器-->
+        <property name="transactionManager" ref="transactionManager"></property>
+    </bean>
+    <!--配置accountService-->
+    <bean id="accountService" class="com.lxgzhw.service.impl.AccountServiceImpl">
+        <!--注入dao-->
+        <property name="dao" ref="accountDao"></property>
+    </bean>
+    <!--配置accountDao-->
+    <bean id="accountDao" class="com.lxgzhw.dao.impl.AccountDaoImpl">
+        <!--注入QueryRunner-->
+        <property name="runner" ref="runner"></property>
+        <!--注入ConnectionUtils-->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+    <!--配置QueryRunner-->
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype"></bean>
+    <!--配置connectionUtils-->
+    <bean id="connectionUtils" class="com.lxgzhw.utils.ConnectionUtils">
+        <!--注入数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--配置transactionManager-->
+    <bean id="transactionManager" class="com.lxgzhw.utils.TransactionManager">
+        <!--注入ConnectionUtils-->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+    <!--配置dataSource-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/java"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+</beans>

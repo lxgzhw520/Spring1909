@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--配置accountService-->
+    <bean id="accountService" class="com.lxgzhw.service.impl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+    </bean>
+    <!--配置accountDao-->
+    <bean id="accountDao" class="com.lxgzhw.dao.impl.AccountDaoImpl">
+        <property name="connectionUtils" ref="connectionUtils"/>
+        <property name="runner" ref="runner"/>
+    </bean>
+    <!--配置connectionUtils-->
+    <bean id="connectionUtils" class="com.lxgzhw.utils.ConnectionUtils">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--配置runner-->
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner"/>
+    <!--配置dataSource-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql:///java"/>
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="com.lxgzhw.utils.TransactionManager">
+        <property name="connectionUtils" ref="connectionUtils"/>
+    </bean>
+    <!--配置aop-->
+    <aop:config>
+        <!--配置通用切入点表达式-->
+        <aop:pointcut id="point1" expression="execution(* com.lxgzhw.service.impl.*.*(..))"/>
+        <!--配置通知-->
+        <aop:aspect id="transactionAdvice" ref="transactionManager">
+            <!--前置通知:开启事务-->
+            <aop:before method="beginTransaction" pointcut-ref="point1"/>
+            <!--后置通知:提交事务-->
+            <aop:after-returning method="commit" pointcut-ref="point1"/>
+            <!--异常通知:回滚事务-->
+            <aop:after-throwing method="rollback" pointcut-ref="point1"/>
+            <!--最终通知:释放连接-->
+            <aop:after method="release" pointcut-ref="point1"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
